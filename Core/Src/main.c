@@ -45,6 +45,9 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 //save status of Button Matrix
 uint16_t ButtonMatrixState = 0;
+uint32_t num=0;
+uint32_t TimeStampButton=0;
+uint16_t save=0;
 
 //Button TimeStamp
 uint32_t ButtonMatrixTimestamp = 0;
@@ -57,6 +60,7 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 //scan and update data of Button Matrix
 void ButtonMatrixUpdate();
+void test();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -71,10 +75,8 @@ void ButtonMatrixUpdate();
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-uint32_t num=0;
-enum{ state0=0,state1,state2,state3,state4,state5,state6,state7,state8,state9,state10,state11,clear,ok
 
-};
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -108,166 +110,17 @@ enum{ state0=0,state1,state2,state3,state4,state5,state6,state7,state8,state9,st
 
     /* USER CODE BEGIN 3 */
 		ButtonMatrixUpdate();
-		//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_SET);
 
-		switch(num)
+
+		if(HAL_GetTick()- TimeStampButton >=200)
 		{
+			TimeStampButton=HAL_GetTick();
+			test();
 
-		case state0:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==64)
-			{
-				num=state1;
-				printf("6");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state1:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==512)
-			{
-				num=state2;
-				printf("2");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state2:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==1024)
-			{
-				num=state3;
-				printf("3");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state3:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==16)
-			{
-				num=state4;
-				printf("4");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state4:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==4096)
-			{
-				num=state5;
-				printf("0");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state5:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==32)
-			{
-				num=state6;
-				printf("5");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state6:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==4096)
-			{
-				num=state7;
-				printf("0");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state7:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==4096)
-			{
-				num=state8;
-				printf("0");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state8:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==4096)
-			{
-				num=state9;
-				printf("0");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state9:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==512)
-			{
-				num=state10;
-				printf("2");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state10:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==1)
-			{
-				num=state11;
-				printf("7");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case state11:
-			ButtonMatrixUpdate();
-			if(ButtonMatrixState==32768)
-			{
-				num=ok;
-				printf("ok");
-			}
-			else
-			{
-				num=state0;
-			}
-			break;
-		case ok:
-			ButtonMatrixUpdate();
-			printf("OK");
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_SET);
-			break;
-		case clear:
-			num=state0;
-			break;
 
 		}
 	}
+
   /* USER CODE END 3 */
 }
 
@@ -465,6 +318,237 @@ void ButtonMatrixUpdate()
 				ButtonMatrixPin[NextOutputPin], GPIO_PIN_RESET);
 
 	}
+}
+enum{ state0=0,state1,state2,state3,state4,
+	state5,state6,state7,state8,state9,state10,state11,clear,ok,holdFail
+};
+void  test()
+{
+	if(ButtonMatrixState !=0 && save !=ButtonMatrixState)
+	{
+	switch(num)
+			{
+			case state0:
+
+				if(ButtonMatrixState==64)
+				{
+
+					num=state1;
+					//printf("6");
+
+				}
+				else if (ButtonMatrixState==8)
+				{
+					num=state0;
+				}
+				else
+				{
+					num=state0;
+				}
+				break;
+			case state1:
+
+				if(ButtonMatrixState==512)
+				{
+
+					num=state2;
+					//printf("2");
+
+				}
+				else if (ButtonMatrixState==8)
+							{
+								num=state0;
+							}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state2:
+
+				if(ButtonMatrixState==1024)
+				{
+
+					num=state3;
+
+					//printf("3");
+				}
+				else if (ButtonMatrixState==8)
+				{
+					num=state0;
+				}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state3:
+
+				if(ButtonMatrixState==16)
+				{
+					num=state4;
+					//printf("4");
+				}
+				else if (ButtonMatrixState==8)
+				{
+					num=state0;
+				}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state4:
+
+				if(ButtonMatrixState==4096)
+				{
+					num=state5;
+				//	printf("0");
+				}
+				else if (ButtonMatrixState==8)
+				{
+					num=state0;
+				}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state5:
+
+				if(ButtonMatrixState==32)
+				{
+					num=state6;
+					//printf("5");
+				}
+				else if (ButtonMatrixState==8)
+				{
+					num=clear;
+				}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state6:
+
+				if(ButtonMatrixState==4096)
+				{
+					num=state7;
+					//printf("0");
+				}
+				else if (ButtonMatrixState==8)
+				{
+					num=state0;
+				}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state7:
+
+				if(ButtonMatrixState==4096)
+				{
+					num=state8;
+					//printf("0");
+				}
+				else if (ButtonMatrixState==8)
+							{
+								num=state0;
+							}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state8:
+
+				if(ButtonMatrixState==4096)
+				{
+					num=state9;
+					//printf("0");
+				}
+				else if (ButtonMatrixState==8)
+							{
+								num=state0;
+							}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state9:
+
+				if(ButtonMatrixState==512)
+				{
+					num=state10;
+					//printf("2");
+				}
+				else if (ButtonMatrixState==8)
+							{
+								num=state0;
+							}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state10:
+
+				if(ButtonMatrixState==1)
+				{
+					num=state11;
+					//printf("7");
+				}
+				else if (ButtonMatrixState==8)
+							{
+								num=state0;
+							}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case state11:
+
+				if(ButtonMatrixState==32768)
+				{	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_SET);
+					num=ok;
+					//printf("ok");
+				}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+			case ok:
+				//printf("OK");
+
+				if(ButtonMatrixState==8)
+				{
+					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_RESET);
+					num=state0;
+				}
+				break;
+//			case clear:
+//				num=state0;
+//				break;
+			case holdFail:
+				if (ButtonMatrixState==8)
+					{
+					num=state0;
+					}
+				else
+				{
+					num=holdFail;
+				}
+				break;
+
+			}
+	}
+	save=ButtonMatrixState;
+
 }
 /* USER CODE END 4 */
 
