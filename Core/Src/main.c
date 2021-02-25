@@ -328,7 +328,7 @@ void  test()
 	{
 	switch(num)
 			{
-			case state0:
+			case state0://start
 
 				if(ButtonMatrixState==64)
 				{
@@ -343,7 +343,7 @@ void  test()
 				}
 				else
 				{
-					num=state0;
+					num=holdFail;
 				}
 				break;
 			case state1:
